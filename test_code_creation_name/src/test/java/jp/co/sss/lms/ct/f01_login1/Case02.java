@@ -1,6 +1,7 @@
 package jp.co.sss.lms.ct.f01_login1;
 
 import static jp.co.sss.lms.ct.util.WebDriverUtils.*;
+import static org.junit.Assert.*;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.openqa.selenium.By;
 
 /**
  * 結合テスト ログイン機能①
@@ -35,14 +37,27 @@ public class Case02 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		// TODO ここに追加
+		//	トップページURLにアクセスする、ログイン画面が表示される
+		goTo("http://localhost:8080/lms");
+		visibilityTimeout(By.xpath("//h2[text()='ログイン']"), 5);
+		assertEquals("ログイン", webDriver.findElement(By.xpath("//h2[text()='ログイン']")).getText());
+		getEvidence(new Object() {
+		});
 	}
 
 	@Test
 	@Order(2)
 	@DisplayName("テスト02 DBに登録されていないユーザーでログイン")
 	void test02() {
-		// TODO ここに追加
+
+		//		DBに登録されていないユーザーでログインし、エラーメッセージが表示される。
+		webDriver.findElement(By.id("loginId")).sendKeys("ユーザー");
+		webDriver.findElement(By.id("password")).sendKeys("パスワード");
+		webDriver.findElement(By.xpath("//input[@type='submit' and @value='ログイン']")).click();
+		visibilityTimeout(By.cssSelector(".help-inline.error"), 5);
+		assertTrue(webDriver.findElement(By.cssSelector(".error")).isDisplayed());
+		getEvidence(new Object() {
+		});
 	}
 
 }
