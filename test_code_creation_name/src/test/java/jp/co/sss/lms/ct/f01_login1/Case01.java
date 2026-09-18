@@ -39,8 +39,8 @@ public class Case01 {
 	void test01() {
 		//		トップページURLにアクセスする、ログイン画面が表示される
 		goTo("http://localhost:8080/lms");
-		visibilityTimeout(By.xpath("//h2[text()='ログイン']"), 5);
-		assertEquals("ログイン", webDriver.findElement(By.xpath("//h2[text()='ログイン']")).getText());
+		visibilityTimeout(By.id("login-title"), 5);
+		assertEquals("ログイン", webDriver.findElement(By.id("login-title")).getText());
 		getEvidence(new Object() {
 		});
 

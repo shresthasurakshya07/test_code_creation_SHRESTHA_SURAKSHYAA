@@ -39,10 +39,11 @@ public class Case02 {
 	void test01() {
 		//	トップページURLにアクセスする、ログイン画面が表示される
 		goTo("http://localhost:8080/lms");
-		visibilityTimeout(By.xpath("//h2[text()='ログイン']"), 5);
-		assertEquals("ログイン", webDriver.findElement(By.xpath("//h2[text()='ログイン']")).getText());
+		visibilityTimeout(By.id("login-title"), 5);
+		assertEquals("ログイン", webDriver.findElement(By.id("login-title")).getText());
 		getEvidence(new Object() {
 		});
+
 	}
 
 	@Test
@@ -53,11 +54,12 @@ public class Case02 {
 		//		DBに登録されていないユーザーでログインし、エラーメッセージが表示される。
 		webDriver.findElement(By.id("loginId")).sendKeys("ユーザー");
 		webDriver.findElement(By.id("password")).sendKeys("パスワード");
-		webDriver.findElement(By.xpath("//input[@type='submit' and @value='ログイン']")).click();
-		visibilityTimeout(By.cssSelector(".help-inline.error"), 5);
+		webDriver.findElement(By.id("loginButton")).click();
+		visibilityTimeout(By.cssSelector(".error"), 5);
 		assertTrue(webDriver.findElement(By.cssSelector(".error")).isDisplayed());
 		getEvidence(new Object() {
 		});
+
 	}
 
 }
