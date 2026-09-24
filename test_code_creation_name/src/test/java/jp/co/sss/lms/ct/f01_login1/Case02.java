@@ -1,7 +1,8 @@
 package jp.co.sss.lms.ct.f01_login1;
 
 import static jp.co.sss.lms.ct.util.WebDriverUtils.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -41,6 +42,7 @@ public class Case02 {
 		goTo("http://localhost:8080/lms");
 		visibilityTimeout(By.id("login-title"), 5);
 		assertEquals("ログイン", webDriver.findElement(By.id("login-title")).getText());
+
 		getEvidence(new Object() {
 		});
 
@@ -50,13 +52,13 @@ public class Case02 {
 	@Order(2)
 	@DisplayName("テスト02 DBに登録されていないユーザーでログイン")
 	void test02() {
-
 		//		DBに登録されていないユーザーでログインし、エラーメッセージが表示される。
 		webDriver.findElement(By.id("loginId")).sendKeys("ユーザー");
 		webDriver.findElement(By.id("password")).sendKeys("パスワード");
 		webDriver.findElement(By.id("loginButton")).click();
 		visibilityTimeout(By.cssSelector(".error"), 5);
 		assertTrue(webDriver.findElement(By.cssSelector(".error")).isDisplayed());
+
 		getEvidence(new Object() {
 		});
 
