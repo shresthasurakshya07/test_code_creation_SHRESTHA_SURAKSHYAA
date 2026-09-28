@@ -41,10 +41,13 @@ public class Case05 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		//		トップページURLにアクセスする、ログイン画面が表示される
+		// トップページURLにアクセス
 		goTo("http://localhost:8080/lms");
-		visibilityTimeout(By.id("login-title"), 5);
-		assertEquals("ログイン", webDriver.findElement(By.id("login-title")).getText());
+		// ログイン画面が表示されるまで待つ
+		visibilityTimeout(By.xpath("//h2[text()='ログイン']"), 5);
+		// ログイン画面であることを検証
+		assertEquals("ログイン", webDriver.findElement(By.xpath("//h2[text()='ログイン']")).getText());
+		// エビデンス
 		getEvidence(new Object() {
 		});
 	}
@@ -53,13 +56,19 @@ public class Case05 {
 	@Order(2)
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
-		//初回ログイン済みの受講生ユーザーでログイン
+
+		// ログインIDを入力
 		webDriver.findElement(By.id("loginId")).sendKeys("StudentAA02");
+
+		// パスワードを入力
 		webDriver.findElement(By.id("password")).sendKeys("StudentAA021");
-		//		コース詳細画面に遷移する、「ログイン」をクリック
-		webDriver.findElement(
-				By.cssSelector("input[type='submit'][value='ログイン']")).click();
-		//　正解　ログイン　の　エビデンス
+
+		// ログイン
+		webDriver.findElement(By.cssSelector("input[type='submit'][value='ログイン']")).click();
+
+		// コース詳細画面であることを検証
+		assertEquals("コース詳細", webDriver.findElement(By.cssSelector("ol.breadcrumb li.active")).getText());
+		// エビデンス
 		getEvidence(new Object() {
 		});
 	}
@@ -69,12 +78,19 @@ public class Case05 {
 	@DisplayName("テスト03 上部メニューの「ヘルプ」リンクからヘルプ画面に遷移")
 	void test03() {
 
-		// 「機能」をクリックしてメニューを開く　「ヘルプ」をクリック
+		// 「機能」をクリックしてメニューを開く
 		webDriver.findElement(By.linkText("機能")).click();
+
+		// 「ヘルプ」をクリック
 		webDriver.findElement(By.linkText("ヘルプ")).click();
 
-		// ヘルプ画面に遷移したことをURLで確認
+		// ヘルプ画面に遷移するまで待つ
 		new WebDriverWait(webDriver, Duration.ofSeconds(5)).until(driver -> driver.getCurrentUrl().contains("/help"));
+
+		// ヘルプ画面であることを検証
+		assertEquals("ヘルプ", webDriver.findElement(By.xpath("//h2[text()='ヘルプ']")).getText());
+
+		// エビデンス
 		getEvidence(new Object() {
 		});
 	}
@@ -100,9 +116,13 @@ public class Case05 {
 				break;
 			}
 		}
-		// FAQページであることをURLで確認
-		new WebDriverWait(webDriver, Duration.ofSeconds(5))
-				.until(driver -> driver.getCurrentUrl().contains("/faq"));
+		// FAQページに遷移するまで待つ
+		new WebDriverWait(webDriver, Duration.ofSeconds(5)).until(driver -> driver.getCurrentUrl().contains("/faq"));
+
+		// FAQ画面であることを検証
+		assertEquals("よくある質問", webDriver.findElement(By.xpath("//h2[text()='よくある質問']")).getText());
+
+		// エビデンス
 		getEvidence(new Object() {
 		});
 	}
@@ -112,30 +132,27 @@ public class Case05 {
 	@DisplayName("テスト05 キーワード検索で該当キーワードを含む検索結果だけ表示")
 	void test05() {
 
-		// 検索のキーワードを入力
+		// 検索キーワードを入力
 		String keyword = "研修";
 		webDriver.findElement(By.id("form")).sendKeys(keyword);
 
-		// 検索ボタンを押下する
-		webDriver.findElement(
-				By.cssSelector("input[type='submit'][value='検索']")).click();
+		// 検索ボタンを押下
+		webDriver.findElement(By.cssSelector("input[type='submit'][value='検索']")).click();
 
-		// 検索結果を取得する
-		var questions = webDriver.findElements(
-				By.cssSelector("dl[id^='question-h'] dt"));
+		// 検索結果を取得
+		var questions = webDriver.findElements(By.cssSelector("dl[id^='question-h'] dt"));
 
-		// 検索結果が2件であることを確認
+		// 検索結果が2件であることを検証
 		assertEquals(2, questions.size());
-		// 検索結果を確認
-		assertEquals("Q.助成金書類の作成方法が分かりません",
-				questions.get(0).getText());
-		assertEquals("Q.研修の申し込みはどのようにすれば良いですか？",
-				questions.get(1).getText());
+
+		// 1件目の検索結果を検証
+		assertEquals("Q.助成金書類の作成方法が分かりません", questions.get(0).getText());
+
+		// 2件目の検索結果を検証
+		assertEquals("Q.研修の申し込みはどのようにすれば良いですか？", questions.get(1).getText());
 
 		// ページの一番下までスクロール
-		((JavascriptExecutor) webDriver).executeScript(
-				"window.scrollTo(0, document.body.scrollHeight);");
-
+		((JavascriptExecutor) webDriver).executeScript("window.scrollTo(0, document.body.scrollHeight);");
 		// エビデンス
 		getEvidence(new Object() {
 		});
@@ -145,10 +162,14 @@ public class Case05 {
 	@Order(6)
 	@DisplayName("テスト06 「クリア」ボタン押下で入力したキーワードを消去")
 	void test06() {
-		// クリア　ボタンをクリック 
+
+		// 「クリア」ボタンをクリック
 		webDriver.findElement(By.cssSelector("input[type='button'][value='クリア']")).click();
-		// キーワード入力の確認 
+
+		// キーワードが消去されたことを検証
 		assertEquals("", webDriver.findElement(By.id("form")).getAttribute("value"));
+
+		// エビデンス
 		getEvidence(new Object() {
 		});
 	}

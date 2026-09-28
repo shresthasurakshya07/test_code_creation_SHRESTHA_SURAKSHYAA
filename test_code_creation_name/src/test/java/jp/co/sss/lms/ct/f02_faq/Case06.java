@@ -43,10 +43,13 @@ public class Case06 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		//		トップページURLにアクセスする、ログイン画面が表示される
+		// トップページURLにアクセス
 		goTo("http://localhost:8080/lms");
-		visibilityTimeout(By.id("login-title"), 5);
-		assertEquals("ログイン", webDriver.findElement(By.id("login-title")).getText());
+		// ログイン画面が表示されるまで待つ
+		visibilityTimeout(By.xpath("//h2[text()='ログイン']"), 5);
+		// ログイン画面であることを検証
+		assertEquals("ログイン", webDriver.findElement(By.xpath("//h2[text()='ログイン']")).getText());
+		// エビデンス
 		getEvidence(new Object() {
 		});
 	}
@@ -55,13 +58,20 @@ public class Case06 {
 	@Order(2)
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
-		//初回ログイン済みの受講生ユーザーでログイン
+
+		// ログインIDを入力
 		webDriver.findElement(By.id("loginId")).sendKeys("StudentAA02");
+
+		// パスワードを入力
 		webDriver.findElement(By.id("password")).sendKeys("StudentAA021");
-		//		コース詳細画面に遷移する、「ログイン」をクリック
-		webDriver.findElement(
-				By.cssSelector("input[type='submit'][value='ログイン']")).click();
-		//　正解　ログイン　の　エビデンス
+
+		// ログイン
+		webDriver.findElement(By.cssSelector("input[type='submit'][value='ログイン']")).click();
+
+		// コース詳細画面であることを検証
+		assertEquals("コース詳細", webDriver.findElement(By.cssSelector("ol.breadcrumb li.active")).getText());
+
+		// エビデンス
 		getEvidence(new Object() {
 		});
 	}
@@ -71,12 +81,19 @@ public class Case06 {
 	@DisplayName("テスト03 上部メニューの「ヘルプ」リンクからヘルプ画面に遷移")
 	void test03() {
 
-		// 「機能」をクリックしてメニューを開く　「ヘルプ」をクリック
+		// 「機能」をクリックしてメニューを開く
 		webDriver.findElement(By.linkText("機能")).click();
+
+		// 「ヘルプ」をクリック
 		webDriver.findElement(By.linkText("ヘルプ")).click();
 
-		// ヘルプ画面に遷移したことをURLで確認
+		// ヘルプ画面に遷移するまで待つ
 		new WebDriverWait(webDriver, Duration.ofSeconds(5)).until(driver -> driver.getCurrentUrl().contains("/help"));
+
+		// ヘルプ画面であることを検証
+		assertEquals("ヘルプ", webDriver.findElement(By.xpath("//h2[text()='ヘルプ']")).getText());
+
+		// エビデンス
 		getEvidence(new Object() {
 		});
 	}
@@ -102,9 +119,13 @@ public class Case06 {
 				break;
 			}
 		}
-		// FAQページであることをURLで確認
-		new WebDriverWait(webDriver, Duration.ofSeconds(5))
-				.until(driver -> driver.getCurrentUrl().contains("/faq"));
+		// FAQページに遷移するまで待つ
+		new WebDriverWait(webDriver, Duration.ofSeconds(5)).until(driver -> driver.getCurrentUrl().contains("/faq"));
+
+		// FAQ画面であることを検証
+		assertEquals("よくある質問", webDriver.findElement(By.xpath("//h2[text()='よくある質問']")).getText());
+
+		// エビデンス
 		getEvidence(new Object() {
 		});
 	}
@@ -113,38 +134,57 @@ public class Case06 {
 	@Order(5)
 	@DisplayName("テスト05 カテゴリ検索で該当カテゴリの検索結果だけ表示")
 	void test05() {
-		//カテゴリ検索の【研修関係】をクリックする
+
+		// 「研修関係」をクリック
 		webDriver.findElement(By.linkText("【研修関係】")).click();
 
-		//検索結果を取得する
-		List<WebElement> question = webDriver.findElements(By.id("question-h[${status.index}]"));
+		// 検索結果の質問を取得
+		List<WebElement> question = webDriver.findElements(
+				By.cssSelector("dl[id^='question-h'] dt"));
 
-		//結果を2件か確認する
+		// 検索結果が2件であることを検証
 		assertEquals(2, question.size());
 
-		//検索結果、スクロール
+		// 1件目の検索結果を検証
+		assertEquals("Q.キャンセル料・途中退校について", question.get(0).getText());
+
+		// 2件目の検索結果を検証
+		assertEquals("Q.研修の申し込みはどのようにすれば良いですか？", question.get(1).getText());
+
+		// 検索結果を見える位置までスクロール
 		((JavascriptExecutor) webDriver).executeScript("window.scrollTo(0, document.body.scrollHeight);");
-		//エビデンス取得
+
+		// エビデンス
 		getEvidence(new Object() {
 		});
-
 	}
 
 	@Test
 	@Order(6)
 	@DisplayName("テスト06 検索結果の質問をクリックしその回答を表示")
 	void test06() {
-		// 検索結果（質問）を取得する
+
+		// 「研修の申し込みはどのようにすれば良いですか？」を取得
 		WebElement question = webDriver.findElement(
 				By.xpath("//dt[contains(.,'研修の申し込みはどのようにすれば良いですか？')]"));
-		// 質問を押下
+
+		// 質問をクリック
 		question.click();
 
-		((JavascriptExecutor) webDriver).executeScript(
-				"window.scrollTo(0, document.body.scrollHeight);");
-		// エビデンス取得
+		// クリックした質問の回答を取得
+		WebElement answer = question.findElement(By.xpath("./following-sibling::dd"));
+
+		// 回答が表示される位置までスクロール
+		((JavascriptExecutor) webDriver).executeScript("arguments[0].scrollIntoView({block:'center'});", answer);
+
+		// 回答が表示されていることを検証
+		assertTrue(answer.isDisplayed());
+
+		// 回答のclassが「dn」ではないことを検証
+		assertFalse(answer.getAttribute("class").contains("dn"));
+
+		// エビデンス
 		getEvidence(new Object() {
 		});
 	}
-
 }

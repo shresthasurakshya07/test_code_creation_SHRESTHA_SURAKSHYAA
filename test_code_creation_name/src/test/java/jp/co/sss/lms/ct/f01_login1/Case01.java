@@ -37,13 +37,15 @@ public class Case01 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		//		トップページURLにアクセスする、ログイン画面が表示される
+		// トップページURLにアクセス
 		goTo("http://localhost:8080/lms");
-		visibilityTimeout(By.id("login-title"), 5);
-		assertEquals("ログイン", webDriver.findElement(By.id("login-title")).getText());
+		// ログイン画面が表示されるまで待つ
+		visibilityTimeout(By.xpath("//h2[text()='ログイン']"), 5);
+		// ログイン画面であることを検証
+		assertEquals("ログイン", webDriver.findElement(By.xpath("//h2[text()='ログイン']")).getText());
+		// エビデンス
 		getEvidence(new Object() {
 		});
-
 	}
 
 }

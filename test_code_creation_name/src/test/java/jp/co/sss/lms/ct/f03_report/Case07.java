@@ -1,6 +1,7 @@
 package jp.co.sss.lms.ct.f03_report;
 
 import static jp.co.sss.lms.ct.util.WebDriverUtils.*;
+import static org.junit.Assert.*;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.openqa.selenium.By;
 
 /**
  * 結合テスト レポート機能
@@ -35,14 +37,27 @@ public class Case07 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		// TODO ここに追加
+		//		トップページURLにアクセスする、ログイン画面が表示される
+		goTo("http://localhost:8080/lms");
+		visibilityTimeout(By.id("login-title"), 5);
+		assertEquals("ログイン", webDriver.findElement(By.id("login-title")).getText());
+		getEvidence(new Object() {
+		});
 	}
 
 	@Test
 	@Order(2)
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
-		// TODO ここに追加
+		//初回ログイン済みの受講生ユーザーでログイン
+		webDriver.findElement(By.id("loginId")).sendKeys("StudentAA02");
+		webDriver.findElement(By.id("password")).sendKeys("StudentAA021");
+		//		コース詳細画面に遷移する、「ログイン」をクリック
+		webDriver.findElement(
+				By.cssSelector("input[type='submit'][value='ログイン']")).click();
+		//　正解　ログイン　の　エビデンス
+		getEvidence(new Object() {
+		});
 	}
 
 	@Test

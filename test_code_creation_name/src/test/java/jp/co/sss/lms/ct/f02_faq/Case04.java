@@ -40,10 +40,13 @@ public class Case04 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
+		// トップページURLにアクセス
 		goTo("http://localhost:8080/lms");
-		visibilityTimeout(By.id("login-title"), 5);
-		assertEquals("ログイン", webDriver.findElement(By.id("login-title")).getText());
-
+		// ログイン画面が表示されるまで待つ
+		visibilityTimeout(By.xpath("//h2[text()='ログイン']"), 5);
+		// ログイン画面であることを検証
+		assertEquals("ログイン", webDriver.findElement(By.xpath("//h2[text()='ログイン']")).getText());
+		// エビデンス
 		getEvidence(new Object() {
 		});
 	}
@@ -52,13 +55,19 @@ public class Case04 {
 	@Order(2)
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
-		//初回ログイン済みの受講生ユーザーでログイン
+
+		// ログインIDを入力
 		webDriver.findElement(By.id("loginId")).sendKeys("StudentAA02");
+
+		// パスワードを入力
 		webDriver.findElement(By.id("password")).sendKeys("StudentAA021");
-		//		コース詳細画面に遷移する、「ログイン」をクリック
-		webDriver.findElement(
-				By.cssSelector("input[type='submit'][value='ログイン']")).click();
-		//　正解　ログイン　の　エビデンス
+
+		// ログイン
+		webDriver.findElement(By.cssSelector("input[type='submit'][value='ログイン']")).click();
+
+		// コース詳細画面であることを検証
+		assertEquals("コース詳細", webDriver.findElement(By.cssSelector("ol.breadcrumb li.active")).getText());
+		// エビデンス取得
 		getEvidence(new Object() {
 		});
 	}
@@ -68,12 +77,19 @@ public class Case04 {
 	@DisplayName("テスト03 上部メニューの「ヘルプ」リンクからヘルプ画面に遷移")
 	void test03() {
 
-		// 「機能」をクリックしてメニューを開く　「ヘルプ」をクリック
+		// 「機能」をクリックしてメニューを開く
 		webDriver.findElement(By.linkText("機能")).click();
+
+		// 「ヘルプ」をクリック
 		webDriver.findElement(By.linkText("ヘルプ")).click();
 
-		// ヘルプ画面に遷移したことをURLで確認
+		// ヘルプ画面に遷移するまで待つ
 		new WebDriverWait(webDriver, Duration.ofSeconds(5)).until(driver -> driver.getCurrentUrl().contains("/help"));
+
+		// ヘルプ画面であることを検証
+		assertEquals("ヘルプ", webDriver.findElement(By.xpath("//h2[text()='ヘルプ']")).getText());
+
+		// エビデンス取得
 		getEvidence(new Object() {
 		});
 	}
@@ -91,7 +107,6 @@ public class Case04 {
 
 		// 新しいタブが開くまで待つ
 		new WebDriverWait(webDriver, Duration.ofSeconds(5)).until(driver -> driver.getWindowHandles().size() > 1);
-
 		// 新しいタブへ切り替える
 		for (String windowHandle : webDriver.getWindowHandles()) {
 			if (!windowHandle.equals(originalWindow)) {
@@ -99,9 +114,13 @@ public class Case04 {
 				break;
 			}
 		}
-		// FAQページであることをURLで確認
-		new WebDriverWait(webDriver, Duration.ofSeconds(5))
-				.until(driver -> driver.getCurrentUrl().contains("/faq"));
+		// FAQページに遷移するまで待つ
+		new WebDriverWait(webDriver, Duration.ofSeconds(5)).until(driver -> driver.getCurrentUrl().contains("/faq"));
+
+		// よくある質問画面であることを検証
+		assertEquals("よくある質問", webDriver.findElement(By.xpath("//h2[text()='よくある質問']")).getText());
+
+		// エビデンス取得
 		getEvidence(new Object() {
 		});
 	}
