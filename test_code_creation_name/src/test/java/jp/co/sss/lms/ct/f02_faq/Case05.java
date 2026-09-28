@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
@@ -114,20 +115,27 @@ public class Case05 {
 		// 検索のキーワードを入力
 		String keyword = "研修";
 		webDriver.findElement(By.id("form")).sendKeys(keyword);
-		//		検索したいkeywordを入力した後　クリアボタンを押下する
-		webDriver.findElement(By.cssSelector("input[type='submit'][value='検索']")).click();
 
-		// 検索した結果を　questions　に取得する
-		var questions = webDriver.findElements(By.cssSelector("dl[id^='question-h'] dt"));
+		// 検索ボタンを押下する
+		webDriver.findElement(
+				By.cssSelector("input[type='submit'][value='検索']")).click();
 
-		// 検索した結果は1行以上あるかどうかを確認
-		assertTrue(questions.size() > 0);
+		// 検索結果を取得する
+		var questions = webDriver.findElements(
+				By.cssSelector("dl[id^='question-h'] dt"));
 
-		// 一行づつkeyword　の値を確認
-		for (var question : questions) {
-			System.out.println("検索結果：" + question.getText());
-			assertTrue(question.getText().contains(keyword));
-		}
+		// 検索結果が2件であることを確認
+		assertEquals(2, questions.size());
+		// 検索結果を確認
+		assertEquals("Q.助成金書類の作成方法が分かりません",
+				questions.get(0).getText());
+		assertEquals("Q.研修の申し込みはどのようにすれば良いですか？",
+				questions.get(1).getText());
+
+		// ページの一番下までスクロール
+		((JavascriptExecutor) webDriver).executeScript(
+				"window.scrollTo(0, document.body.scrollHeight);");
+
 		// エビデンス
 		getEvidence(new Object() {
 		});
@@ -137,10 +145,8 @@ public class Case05 {
 	@Order(6)
 	@DisplayName("テスト06 「クリア」ボタン押下で入力したキーワードを消去")
 	void test06() {
-
 		// クリア　ボタンをクリック 
 		webDriver.findElement(By.cssSelector("input[type='button'][value='クリア']")).click();
-
 		// キーワード入力の確認 
 		assertEquals("", webDriver.findElement(By.id("form")).getAttribute("value"));
 		getEvidence(new Object() {
