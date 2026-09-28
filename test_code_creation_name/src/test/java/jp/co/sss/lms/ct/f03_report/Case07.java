@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
 
 /**
  * 結合テスト レポート機能
@@ -37,10 +39,13 @@ public class Case07 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		//		トップページURLにアクセスする、ログイン画面が表示される
+		// トップページURLにアクセス
 		goTo("http://localhost:8080/lms");
-		visibilityTimeout(By.id("login-title"), 5);
-		assertEquals("ログイン", webDriver.findElement(By.id("login-title")).getText());
+		// ログイン画面が表示されるまで待つ
+		visibilityTimeout(By.xpath("//h2[text()='ログイン']"), 5);
+		// ログイン画面であることを検証
+		assertEquals("ログイン", webDriver.findElement(By.xpath("//h2[text()='ログイン']")).getText());
+		// エビデンス
 		getEvidence(new Object() {
 		});
 	}
@@ -53,8 +58,7 @@ public class Case07 {
 		webDriver.findElement(By.id("loginId")).sendKeys("StudentAA02");
 		webDriver.findElement(By.id("password")).sendKeys("StudentAA021");
 		//		コース詳細画面に遷移する、「ログイン」をクリック
-		webDriver.findElement(
-				By.cssSelector("input[type='submit'][value='ログイン']")).click();
+		webDriver.findElement(By.cssSelector("input[type='submit'][value='ログイン']")).click();
 		//　正解　ログイン　の　エビデンス
 		getEvidence(new Object() {
 		});
@@ -64,21 +68,67 @@ public class Case07 {
 	@Order(3)
 	@DisplayName("テスト03 未提出の研修日の「詳細」ボタンを押下しセクション詳細画面に遷移")
 	void test03() {
-		// TODO ここに追加
+
+		// 「未提出」の行にある「詳細」ボタンをクリック
+		WebElement detailButton = webDriver.findElement(By.xpath("//tr[td/span[text()='未提出']]//input[@value='詳細']"));
+		//スクロールして画面全体
+		((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", detailButton);
+
+		visibilityTimeout(By.cssSelector("ol.breadcrumb li.active"), 5);
+		//セクション詳細画面を検証
+		assertEquals("セクション詳細", webDriver.findElement(By.cssSelector("ol.breadcrumb li.active")).getText());
+
+		getEvidence(new Object() {
+		});
 	}
 
 	@Test
 	@Order(4)
-	@DisplayName("テスト04 「提出する」ボタンを押下しレポート登録画面に遷移")
+	@DisplayName("テスト04 日報を提出するボタンを押下し、レポート登録画面に遷移")
 	void test04() {
-		// TODO ここに追加
+
+		// 「日報を提出する」ボタンをクリック
+		WebElement reportButton = webDriver
+				.findElement(By.xpath("//input[@type='submit' and contains(@value,'日報') and contains(@value,'提出する')]"));
+		reportButton.click();
+
+		// レポート登録画面の入力欄が表示されるまで待つ
+		visibilityTimeout(By.cssSelector("textarea[id^='content_']"), 5);
+
+		// レポート登録画面が表示されたことを確認
+		assertTrue(webDriver.findElement(By.cssSelector("textarea[id^='content_']")).isDisplayed());
+
+		getEvidence(new Object() {
+		});
 	}
 
 	@Test
 	@Order(5)
-	@DisplayName("テスト05 報告内容を入力して「提出する」ボタンを押下し確認ボタン名が更新される")
+	@DisplayName("テスト05 内容を入力して「提出する」ボタンを押下し、セクション詳細画面のボタン名が更新される")
 	void test05() {
-		// TODO ここに追加
-	}
 
+		// 内容を入力
+		webDriver.findElement(By.cssSelector("textarea[id^='content_']")).sendKeys("テスト　07　です。");
+
+		// 「提出する」ボタンを押下
+		webDriver.findElement(By.xpath("//button[text()='提出する']")).click();
+
+		// セクション詳細画面に戻るまで待つ
+		visibilityTimeout(By.cssSelector("ol.breadcrumb li.active"), 5);
+
+		// セクション詳細画面であることを確認
+		assertEquals("セクション詳細", webDriver.findElement(By.cssSelector("ol.breadcrumb li.active")).getText());
+
+		// 提出後のボタンを取得
+		WebElement reportButton = webDriver.findElement(
+				By.xpath("//form[contains(@action,'/report/regist')]//input[@type='submit']"));
+
+		// ボタン名を確認
+		String buttonText = reportButton.getAttribute("value");
+
+		assertTrue(buttonText.startsWith("提出済み") && buttonText.endsWith("を確認する"));
+
+		getEvidence(new Object() {
+		});
+	}
 }

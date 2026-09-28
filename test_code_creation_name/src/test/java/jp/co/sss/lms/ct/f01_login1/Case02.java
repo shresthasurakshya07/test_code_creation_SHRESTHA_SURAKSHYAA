@@ -58,6 +58,7 @@ public class Case02 {
 		webDriver.findElement(By.id("password")).sendKeys("パスワード");
 		webDriver.findElement(By.id("loginButton")).click();
 		visibilityTimeout(By.cssSelector(".error"), 5);
+
 		assertTrue(webDriver.findElement(By.cssSelector(".error")).isDisplayed());
 		getEvidence(new Object() {
 		});
