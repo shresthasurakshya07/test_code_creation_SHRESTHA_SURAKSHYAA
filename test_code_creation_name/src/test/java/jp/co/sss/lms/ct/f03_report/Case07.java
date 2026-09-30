@@ -54,12 +54,16 @@ public class Case07 {
 	@Order(2)
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
-		//初回ログイン済みの受講生ユーザーでログイン
+		//受生の　ログインIDとパスワードを入力する
 		webDriver.findElement(By.id("loginId")).sendKeys("StudentAA02");
 		webDriver.findElement(By.id("password")).sendKeys("StudentAA021");
-		//		コース詳細画面に遷移する、「ログイン」をクリック
+		//ログインボタンを押下//
 		webDriver.findElement(By.cssSelector("input[type='submit'][value='ログイン']")).click();
-		//　正解　ログイン　の　エビデンス
+
+		// コース詳細画面であることを検証
+		assertEquals("コース詳細", webDriver.findElement(By.cssSelector("ol.breadcrumb li.active")).getText());
+
+		//エビデンス
 		getEvidence(new Object() {
 		});
 	}
